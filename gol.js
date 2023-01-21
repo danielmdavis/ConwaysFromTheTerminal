@@ -31,7 +31,7 @@ const gridComparer = (oldGrid, grid) => {
     return match
 }
 
-const gridPrinter = (grid) => {
+const gridPrinter = grid => {
     let row
     for (let i = 0; i < 10; i++) {
         row = ''
@@ -70,7 +70,7 @@ const stateAndFateCheckAndUpdate = (y, x, grid) => {
     if (!status && neighbors === 3) { grid.set([y, x], 1) }
 }
 
-const UpdateAll = (grid) => {
+const UpdateAll = grid => {
     for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
             stateAndFateCheckAndUpdate(j, i, grid)
