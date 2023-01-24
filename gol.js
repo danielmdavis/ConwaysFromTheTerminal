@@ -31,7 +31,7 @@ const gridComparer = (oldGrid, grid) => {
     return match
 }
 
-const gridPrinter = (grid) => {
+const gridPrinter = grid => {
     let row
     for (let i = 0; i < 10; i++) {
         row = ''
@@ -49,9 +49,7 @@ const gridPrinter = (grid) => {
     console.log(' ')
 }
 
-const stateAndFateCheckAndUpdate = (y, x, grid, stableGrid) => {
-
-    const status = stableGrid.get([y, x])
+const calculateMooreNeighborhood = (y, x, stableGrid) => {
 
     let [u, ur, r, dr, d, dl, l, ul] = [0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -64,14 +62,21 @@ const stateAndFateCheckAndUpdate = (y, x, grid, stableGrid) => {
     if (y !== 9 && x !== 0) { dl = stableGrid.get([y + 1, x - 1])}
     if (y !== 0 && x !== 0) { ul = stableGrid.get([y - 1, x - 1])}
     
-    const neighbors = u + ur + r + dr + d + dl + l + ul
+    return (u + ur + r + dr + d + dl + l + ul)
+}
+
+const stateAndFateCheckAndUpdate = (y, x, grid, stableGrid) => {
+
+    const status = stableGrid.get([y, x])
+
+    const neighbors = calculateMooreNeighborhood(y, x, stableGrid)
 
     if (status && neighbors < 2) { grid.set([y, x], 0) }
     if (status && neighbors > 3) { grid.set([y, x], 0) }
     if (!status && neighbors === 3) { grid.set([y, x], 1) }
 }
 
-const UpdateAll = (grid) => {
+const UpdateAll = grid => {
     const stableGrid = grid.clone()
     for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
