@@ -49,21 +49,22 @@ const gridPrinter = (grid) => {
     console.log(' ')
 }
 
-const stateAndFateCheckAndUpdate = (y, x, grid) => {
-    const status = grid.get([y, x])
-    let [above, below, left, right] = [0, 0, 0, 0]
-    let [ul, ur, bl, br] = [0, 0, 0, 0]
+const stateAndFateCheckAndUpdate = (y, x, grid, stableGrid) => {
 
-    if (y !== 0) { above = grid.get([y - 1, x]) }     
-    if (x !== 0) { left = grid.get([y, x - 1]) }
-    if (y !== 9) { below = grid.get([y + 1, x]) }
-    if (x !== 9) { right = grid.get([y, x + 1]) }
-    if (y !== 0 && x !== 0) { ul = grid.get([y - 1, x - 1])}
-    if (y !== 0 && x !== 9) { ur = grid.get([y - 1, x + 1])}
-    if (y !== 9 && x !== 0) { bl = grid.get([y + 1, x - 1])}
-    if (y !== 9 && x !== 9) { br = grid.get([y + 1, x + 1])}
+    const status = stableGrid.get([y, x])
+
+    let [u, ur, r, dr, d, dl, l, ul] = [0, 0, 0, 0, 0, 0, 0, 0]
+
+    if (y !== 0) { u = stableGrid.get([y - 1, x]) } 
+    if (x !== 9) { r = stableGrid.get([y, x + 1]) }
+    if (y !== 9) { d = stableGrid.get([y + 1, x]) }
+    if (x !== 0) { l = stableGrid.get([y, x - 1]) }
+    if (y !== 0 && x !== 9) { ur = stableGrid.get([y - 1, x + 1])}
+    if (y !== 9 && x !== 9) { dr = stableGrid.get([y + 1, x + 1])}
+    if (y !== 9 && x !== 0) { dl = stableGrid.get([y + 1, x - 1])}
+    if (y !== 0 && x !== 0) { ul = stableGrid.get([y - 1, x - 1])}
     
-    const neighbors = above + below + left + right + ul + ur + bl + br
+    const neighbors = u + ur + r + dr + d + dl + l + ul
 
     if (status && neighbors < 2) { grid.set([y, x], 0) }
     if (status && neighbors > 3) { grid.set([y, x], 0) }
@@ -71,9 +72,10 @@ const stateAndFateCheckAndUpdate = (y, x, grid) => {
 }
 
 const UpdateAll = (grid) => {
+    const stableGrid = grid.clone()
     for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
-            stateAndFateCheckAndUpdate(j, i, grid)
+            stateAndFateCheckAndUpdate(j, i, grid, stableGrid)
         }
     }
 }
