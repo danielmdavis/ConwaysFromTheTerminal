@@ -4,6 +4,7 @@ const math = create(all,  {})
 
 const scale = 15
 
+// returns a matrix at scale size with 50/50 odds of each cell being on or off
 const randomGridBuilder = () => {
     let dummyArr = []
     let builder = []
@@ -17,12 +18,12 @@ const randomGridBuilder = () => {
     return math.matrix(dummyArr)
 }
 
+// determines whether last two generations have been identical
 const gridComparer = (oldGrid, grid) => {
     let match = true
     for (let i = 0; i < scale; i++) {
         for (let j = 0; j < scale; j++) {
             if (oldGrid !== undefined) {
-
                 if (oldGrid.get([j, i]) !== grid.get([j, i])) { 
                     match = false 
                 }
@@ -32,6 +33,7 @@ const gridComparer = (oldGrid, grid) => {
     return match
 }
 
+// simple ascii element used by gridPrinter
 const buildSeperator = scale => {
     let seperator = ''
     for (let i = 0; i < scale; i++) {
@@ -41,6 +43,7 @@ const buildSeperator = scale => {
     return seperator
 }
 
+// logs rows of blocks and spaces to the console to represent distribution of on/off cells in matrix
 const gridPrinter = grid => {
     let row
     for (let i = 0; i < scale; i++) {
@@ -54,14 +57,13 @@ const gridPrinter = grid => {
         }
         console.log(row)
     }
-
     console.log(' ')
     console.log(buildSeperator(scale))
     console.log(' ')
 }
 
+// checks value of each neighboring cell, returns sum of values which is count of neighbors
 const calculateMooreNeighborhood = (y, x, stableGrid) => {
-
     let [u, ur, r, dr, d, dl, l, ul] = [0, 0, 0, 0, 0, 0, 0, 0]
 
     if (y !== 0) { u = stableGrid.get([y - 1, x]) } 
@@ -77,8 +79,7 @@ const calculateMooreNeighborhood = (y, x, stableGrid) => {
 }
 
 // EXAMPLE - the other way to do it
-
-const parseSurviveIntoKill = (rule) => {
+const parseSurviveIntoKill = rule => {
     let killRule = [0, 1 , 2, 3, 4, 5, 6, 7, 8]
     for (let i = 0; i < 9; i++) {
         rule.forEach((j) => {
@@ -94,9 +95,10 @@ const parseSurviveIntoKill = (rule) => {
 // comma or space seperated, parse into an array for each
 // rather than "kill all that don't survive", refactor into the more thematic "opt in to survive"
 // refactor fate update for non-continuous rules
+// **** if by some miracle we finish, update gridComparer to recognize period-2 oscillators 
 
-// if by some miracle we finish, update gridComparer to recognize period-2 oscillators 
 
+// applies birth & survive ruleset based on value and neighborhood value of cell
 const stateAndFateUpdate = (y, x, grid, stableGrid) => {
 
     // get state
@@ -109,7 +111,8 @@ const stateAndFateUpdate = (y, x, grid, stableGrid) => {
     if (!status && neighborCount === 3) { grid.set([y, x], 1) }
 }
 
-const UpdateAll = grid => {
+// saves current generation starting state for calculating neighborhood against, applies stateAndFateUpdate for each cell
+const updateAll = grid => {
     const stableGrid = grid.clone()
     for (let i = 0; i < scale; i++) {
         for (let j = 0; j < scale; j++) {
@@ -118,12 +121,12 @@ const UpdateAll = grid => {
     }
 }
 
+// applies all n times, checking against gridComparer
 const generations = async (maxGens, grid) => {
     let stop = false
     let oldGrid
     for (let i = 0; (i < maxGens && stop === false); i++) { 
-        
-        UpdateAll(grid) 
+        updateAll(grid) 
         if (i > 0 && gridComparer(oldGrid, grid)) { break }
         console.log(i)
         gridPrinter(grid) 
@@ -131,5 +134,4 @@ const generations = async (maxGens, grid) => {
     }
 }
 
-let grid = randomGridBuilder()
-generations(1000, grid)
+generations(1000, randomGridBuilder())
